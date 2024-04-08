@@ -1,39 +1,36 @@
-import sys
-from io import BytesIO
-from test import get_spn
+from flask import Flask, render_template
+ 
+app = Flask(__name__)
+ 
+ 
+@app.route('/results/<nickname>/<int:level>/<float:rating>')
+def greeting(nickname, level, rating):
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <title>Результаты</title>
+</head>
 
-import requests
-from PIL import Image
-toponym_to_find = " ".join(sys.argv[1:])
+<body>
+    <h1>Результаты отбора</h1>
+    <h2>Претендента на участие в миссии {nickname}:</h2>
+    <div class="alert alert-success" role="alert">
+        Поздравляем! Ваш рейтинг после {level} этапа отбора
+    </div>
+    <div class="alert alert-light" role="alert">
+      Составляет {rating}!
+    </div>
+    <div class="alert alert-warning" role="alert">
+        Жедаем удачи!
+    </div>
+</body>
 
-geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
-
-geocoder_params = {
-    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-    "geocode": toponym_to_find,
-    "format": "json"}
-
-response = requests.get(geocoder_api_server, params=geocoder_params)
-
-if not response:
-    pass
-
-# Преобразуем ответ в json-объект
-json_response = response.json()
-# Получаем первый топоним из ответа геокодера.
-
-toponym_coodrinates = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
-toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-
-params = {
-    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-    "geocode": f"{toponym_longitude},{toponym_lattitude}",
-    "format": "json"}
-
-adress = f"https://geocode-maps.yandex.ru/1.x"
-if not adress:
-    pass
-response = requests.get(adress, params=params).json()
-address_name = response["response"]["GeoObjectCollection"]["featureMember"][2][
-'GeoObject']['metaDataProperty']['GeocoderMetaData']["Address"]['Components'][4]["name"]
-print(address_name)
+</html>"""
+ 
+ 
+if __name__ == '__main__':
+    app.run(port=8080, host='127.0.0.1')
