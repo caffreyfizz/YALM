@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 
 @app.route('/')
-@app.route('/index/<our_title>')
-def index(our_title):
-    title = our_title
-    return render_template('base.html', title=title)
+@app.route('/training/<prof>')
+def index(prof):
+    proffession = prof.lower()
+    return render_template('training.html', prof=proffession)
 
 
 if __name__ == '__main__':
